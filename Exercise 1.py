@@ -37,7 +37,7 @@ h.finitialize(-65*mV)
 
 my_plot1=rvp.plot(plotly, name="t=0", line={'width': 4})
 
-for tstop in [0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,10]:
+for tstop in [0.5,1,1.5,2,2.5,3,3.5,4,4.5,5]:
     h.continuerun(tstop)
     my_plot1=rvp.plot(my_plot1, name=f't={tstop}',line={'width': 4})
 
