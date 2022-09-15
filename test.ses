@@ -1,0 +1,158 @@
+{load_file("nrngui.hoc")}
+objectvar save_window_, rvp_
+objectvar scene_vector_[4]
+objectvar ocbox_, ocbox_list_, scene_, scene_list_
+{ocbox_list_ = new List()  scene_list_ = new List()}
+{pwman_place(0,0,0)}
+
+//Begin CellBuild[0]
+{
+load_file("celbild.hoc", "CellBuild")
+}
+{ocbox_ = new CellBuild(1)}
+{object_push(ocbox_)}
+{
+version(5.7)
+continuous = 1
+}
+{object_push(topol)}
+{
+first = 0
+slist.remove_all()
+sname = "dend"
+objref tobj
+}
+{
+tobj = new CellBuildSection("soma",0, 0, tobj, 0) slist.append(tobj)
+  tobj.position(0,0,15,0) tobj.lx=7.5 tobj.ly=0 tobj.i3d=0
+all_init()
+}
+for i=0, slist.count-1 {slist.object(i).rdses()}
+{object_pop()}
+{
+}
+{object_push(subsets)}
+{first = 0}
+{ tobj = snlist.object(0)}
+{consist()}
+{object_pop()}
+{
+}
+{object_push(geom)}
+{
+first = 0
+tobj = new GeoSpec(0, bild.subsets.snlist.object(0))
+for i=0, 0 {tobj.snlist.list.object(i).ldiaminfo.x[0] = fscan()}}
+1001
+{
+bild.subsets.snlist.object(0).geo.append(tobj)
+tobj = new GeoSpec(1, bild.subsets.snlist.object(0))
+for i=0, 0 {tobj.snlist.list.object(i).ldiaminfo.x[1] = fscan()}}
+1
+{
+bild.subsets.snlist.object(0).geo.append(tobj)
+tobj = new GeoSpec(6)
+tobj.value = 1001
+bild.subsets.snlist.object(0).geo.append(tobj)
+set_default()
+}
+{object_pop()}
+{
+}
+{object_push(memb)}
+{first=0}
+{
+tobj = new MechanismStandard("hh")
+tobj.set("gnabar_hh", 0.12, 0)
+tobj.set("gkbar_hh", 0.036, 0)
+tobj.set("gl_hh", 0.0003, 0)
+tobj.set("el_hh", -54.3, 0)
+tobj = new MStanWrap(tobj, 1)
+bild.topol.slist.object(0).ml.append(tobj)
+}
+{
+tobj = new FakeMechStan(0)
+tobj.value = 35.4
+tobj.set_default()
+tobj = new MStanWrap(tobj, 0)
+bild.topol.slist.object(0).ml.append(tobj)
+}
+{
+tobj = new FakeMechStan(1)
+tobj.value = 1
+tobj.set_default()
+tobj = new MStanWrap(tobj, 0)
+bild.topol.slist.object(0).ml.append(tobj)
+}
+{object_pop()}
+{
+}
+{object_push(manage)}
+{
+first = 0
+classname = "Cell"
+etop=1 esub=1 egeom=1 emem=1
+itop=1 isub=0 igeom=0 imem=0
+bild.topol.names_off = 0
+bild.topol.circles_off = 0
+output_index = 0  output_x = 1
+thresh = 10
+}
+{object_pop()}
+{
+cexport()
+}
+{object_pop()}
+{
+save_window_=ocbox_.gtopol
+save_window_.size(-200,200,-150,150)
+scene_vector_[2] = save_window_
+ocbox_.gtopol = save_window_
+save_window_.save_name("ocbox_.gtopol")
+}
+{
+ocbox_.map("CellBuild[0]", 604, 446, 694.8, 319.5)
+}
+objref ocbox_
+//End CellBuild[0]
+
+
+//Begin PointProcessManager
+{
+load_file("pointman.hoc")
+}
+{
+soma ocbox_ = new PointProcessManager(0)
+}
+{object_push(ocbox_)}
+{
+mt.select("VClamp") i = mt.selected()
+ms[i] = new MechanismStandard("VClamp")
+ms[i].set("dur", 0, 0)
+ms[i].set("dur", 0, 1)
+ms[i].set("dur", 0, 2)
+ms[i].set("amp", 0, 0)
+ms[i].set("amp", 0, 1)
+ms[i].set("amp", 0, 2)
+ms[i].set("gain", 100000, 0)
+ms[i].set("rstim", 1, 0)
+ms[i].set("tau1", 0.001, 0)
+ms[i].set("tau2", 0, 0)
+ms[i].set("e0", 0, 0)
+ms[i].set("vo0", 0, 0)
+ms[i].set("vi0", 0, 0)
+ms[i].set("fac", 0, 0)
+mt.select("VClamp") i = mt.selected() maction(i)
+hoc_ac_ = 0.5
+sec.sec move() d1.flip_to(0)
+}
+{object_pop() doNotify()}
+{
+ocbox_ = ocbox_.v1
+ocbox_.map("PointProcessManager", 93, 93, 363.6, 611.1)
+}
+objref ocbox_
+//End PointProcessManager
+
+objectvar scene_vector_[1]
+{doNotify()}
