@@ -5,31 +5,31 @@ import plotly
 import plotly.graph_objects as go
 h.load_file("stdrun.hoc")
 
-axon=h.Section(name="axon")
-axon.L=10 * um
-axon.diam=1 * um
-axon.nseg=10
-h.hh.insert(axon)
+soma=h.Section(name="soma")
+soma.L=10 * um
+soma.diam=10 * um
+soma.nseg=10
+h.hh.insert(soma)
 cyt=rxd.Region(h.allsec(), name='cyt', nrn_region='i')
 k=rxd.Species(cyt, name='k',charge=1)
 
-vc=h.SEClamp(axon(0.5))
+vc=h.SEClamp(soma(0.5))
 vc.amp1=-65*mV
 vc.dur1= 5*ms
+vc.dur2=20*ms
 vc.amp3=-65*mV
 vc.dur3=1000*ms
 
 t=h.Vector().record(h._ref_t)
-ina=h.Vector().record(axon(0.5)._ref_ina)
-ik=h.Vector().record(axon(0.5)._ref_ik)
-ki=h.Vector().record(axon(0.5)._ref_ki)
+ina=h.Vector().record(soma(0.5)._ref_ina)
+ik=h.Vector().record(soma(0.5)._ref_ik)
+ki=h.Vector().record(soma(0.5)._ref_ki)
 figna=go.Figure()
 figk=go.Figure()
 figki=go.Figure()
 
-for voltage in [-80,-70,-60,-50,-40,-30,-20,-10,-0,10,20,30,40]:
+for voltage in range(-80,50,10):
     vc.amp2=voltage*mV
-    vc.dur2=20*ms
     h.finitialize(-65*mV)
     h.continuerun(30*ms)
     figna.add_trace(go.Scatter(x=t, y=ina, name=f"{voltage} mV"))
