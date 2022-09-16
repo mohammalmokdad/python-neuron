@@ -44,13 +44,14 @@ fig=go.Figure()
 # x coordinate = every segments x value (0-1) multiplied by the length of the axon, this allows position to be expressed in terms of um
 # y coordinate = the entry of the vector in each thr_cr_vecs (time stamp of when the threshold was crossed)
 cross_times=[vec[0] for vec in th_cr_vecs]
+midpoints=[seg.x*axon.L for seg in axon]
 
-fig.add_trace(go.Scatter(x=[seg.x*axon.L for seg in axon], y=cross_times))
+fig.add_trace(go.Scatter(x=midpoints, y=cross_times))
 
 fig = fig.update_layout({
     "xaxis_title": "Position (µm)",
     "yaxis_title": "Time when threshold crossed (ms)",
-    "title":'Time where action potential occured as a function of Position'
+    "title":'Time When Action Potential Occured as a Function of Position'
 })
 fig.show()
 
@@ -58,14 +59,14 @@ fig.show()
 
 
 
-# x coordinate = position of every midpoint of every segment
+# x coordinate = position of every segment minus last one
 # y coordinate = speed, calculated as length of each segment divided by the delta T from spike occuring in one section to the next
 deltas=h.Vector(cross_times[1:]) - h.Vector(cross_times[:-1])
 speed=(axon.L/axon.nseg)/deltas
-midpoints=[(i+0.5)*(axon.L/axon.nseg) for i in range(len(speed))]
+midpoints2=midpoints[:-1]
 
 fig2=go.Figure()
-fig2.add_trace(go.Scatter(x=midpoints, y=speed))
+fig2.add_trace(go.Scatter(x=midpoints2, y=speed))
 fig2 = fig2.update_layout({
     "xaxis_title": "Position (µm)",
     "yaxis_title": "Speed of action potential (µm/ms)",
