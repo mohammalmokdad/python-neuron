@@ -49,7 +49,7 @@ DERIVATIVE states {
 
 PROCEDURE rates(v(mV)) {LOCAL am, bm
 	am = 0.4 * (7.5-v)/(exp((7.5-v)/5)-1)
-	bm = 0.4 * (v-35)/(exp((v-35)/5)-1))
+	bm = 0.4 * (v-35)/(exp((v-35)/5)-1)
 	mtau = 1/(am + bm)
 	minf = am/(am + bm)
 }

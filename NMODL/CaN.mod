@@ -3,6 +3,7 @@ TITLE CaN
 
 NEURON {
 	SUFFIX CaN
+	USEION can READ ecan WRITE ican VALENCE 2
 	USEION ca READ eca WRITE ica
 	RANGE gcanbar, ica, ican, g
 }
@@ -15,6 +16,7 @@ UNITS {
 
 PARAMETER {
 	gcanbar = 0 (S/cm2)
+	ecan
 }
 
 ASSIGNED {
@@ -35,8 +37,8 @@ STATE {
 BREAKPOINT {
 	SOLVE states METHOD cnexp
 	g = gcanbar * m^2 * h
-	ica = g * (v - eca)
-	ican = ica
+	ican = g * (v - ecan)
+	ica = ican
 }
 
 INITIAL {

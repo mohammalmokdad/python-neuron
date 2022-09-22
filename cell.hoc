@@ -1,0 +1,47 @@
+create soma,dendrite
+access soma
+connect soma(1),dendrite(0)
+
+diam=22
+L=300
+Ra=115
+insert pas
+e_pas=-70
+g_pas=0.0048
+cm=25
+
+access dendrite
+diam=22
+L=1200
+Ra=115
+insert pas
+insert L_Ca
+insert kca2
+gcabar_L_Ca=2e-4
+e_pas=-70
+g_pas=3.9e-5
+cm=2.5
+
+access soma
+
+theta_m_L_Ca=-40
+tau_m_L_Ca=40
+celsius=37
+
+//default spike conductances
+insert na3rp
+insert naps
+insert kdrRL
+insert mAHP
+gbar_na3rp=0.2
+gbar_naps=0.002
+sh_na3rp=0
+sh_naps=10
+gMax_kdrRL=0.015
+gcamax_mAHP = 8e-06
+gkcamax_mAHP = 0.015
+taur_mAHP=40
+tmin_kdrRL = 0.8
+taumax_kdrRL = 20
+mVh_kdrRL = -21
+mvhalfca_mAHP = -26

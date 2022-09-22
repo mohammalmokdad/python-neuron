@@ -3,13 +3,13 @@ TITLE CalConc
 
 NEURON {
 	SUFFIX CaN
-	USEION ca READ ican WRITE cai
-	RANGE ican, cai, cca
+	USEION ca READ ica WRITE cai
+	RANGE cai, cca, ica, ican
 }
 
 UNITS {
+	(molar) = (1/liter)
 	(mV) = (millivolt)
-	(ms) = (ms)
 	(mA) = (milliamp)
 	(mM) = (millimolar)
 }
@@ -19,8 +19,9 @@ PARAMETER {
 	tau = 13.33 (ms)
 }
 
-ASSIGNED {
+ASSIGNED { 
 	ican (mA/cm2)
+	ica (mA/cm2)
 	i (mA/cm2)
 	cai (mM)
 }
