@@ -15,35 +15,61 @@ class morph:
         # do discretization, ion channels, etc
     def load_morphology(self):
         cell = h.Import3d_SWC_read()
-        cell.input("Morpho\S_1.swc")
+        cell.input("Morpho\S_2.swc")
         i3d = h.Import3d_GUI(cell, False)
         i3d.instantiate(self)
 
 mycell=morph()
 
-# calculating total area and length of cell (in um and um^2, respectively)
 area=0
-for sec in mycell.all:
-    area = area + sec(0.5).area()
-print(area)
-
 length=0
-len_vec=[]
-area1=0
-areavec=[]
 for sec in mycell.all:
-    area1=area1 + sec(0.5).area()
-    areavec.append(area1/area)
-    length=length+sec.L
-    len_vec.append(length)
+    area+= sec.L*sec.diam*np.pi
 print(area)
 
+maxlength=0
+totarea=0
+resolution=10
+
+soma=mycell.soma[0]
+for sec in soma.subtree():
+    sec.nseg=int(np.ceil(sec.L/resolution))
+    totarea+=sec.L*sec.diam*np.pi
+    length=h.distance(soma(0),sec(1))
+    if length>maxlength:
+        maxlength=length
+        section=sec
+
+print(maxlength)
+print(section)
+print(totarea)
 
 
-fig=px.line(x=len_vec, y=areavec)
+arearray=[]
+distarray=np.arange(0,maxlength+resolution,resolution)
+for testdist in distarray:
+    area=0
+    for sec in soma.subtree():
+        halt=0
+        i=0
+        for seg in sec.allseg():
+            i=i+1
+            if halt==0:
+                dist=h.distance(soma(0),seg)
+                if dist>=testdist:
+                    area+=h.distance(sec(0),seg)*seg.diam*np.pi
+                    halt=1
+                if seg==sec(1) and dist<testdist:
+                    area+=sec.L*sec.diam*np.pi
+    arearray.append(area)
+
+areanp=np.array(arearray)
+cumarea=areanp/totarea
+
+fig=px.line(x=distarray, y=cumarea)
 fig = fig.update_layout({
-    "xaxis_title": "Time (ms)",
-    "yaxis_title": "Voltage (mV)",
+    "xaxis_title": "Path Length",
+    "yaxis_title": "Cumalitive Area",
     "title":'Voltage response to 1 nA current'
 })
 fig.show()

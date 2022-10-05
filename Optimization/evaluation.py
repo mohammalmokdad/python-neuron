@@ -18,14 +18,14 @@ def evaluate(individual):
     soma=h.Section(name="soma")
     soma.diam=22
     soma.L=individual[0]
-    soma.Ra=115
+    soma.Ra=70
     soma.cm=individual[2]
     soma.insert('pas')
     soma.e_pas=-70
     soma.g_pas=0.0048
 
     dend=h.Section(name="dend")
-    dend.diam=22
+    dend.diam=70
     dend.L=individual[1]
     dend.Ra=115
     dend.cm=individual[2]/10
