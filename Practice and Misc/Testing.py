@@ -15,7 +15,7 @@ class morph:
         # do discretization, ion channels, etc
     def load_morphology(self):
         cell = h.Import3d_SWC_read()
-        cell.input("Morpho\S_2.swc")
+        cell.input("Morpho/v_e_moto2.CNG.swc")
         i3d = h.Import3d_GUI(cell, False)
         i3d.instantiate(self)
 
