@@ -1,17 +1,17 @@
-from neuron import h
-from neuron.units import um, mV, ms
-import plotly.express as px
-import pandas as pd
 import numpy as np
-import sys
-import Calc_Cumarea as cm
 
-[cumareas,distance]=cm.cumarea("Morpho\S_2.swc",2)
+size=3
+rng = np.random.default_rng()
+nums=rng.integers(-30,31,size)
+print(nums)
+answer=np.empty(len(nums))
+for i in np.arange(0,len(nums),1):
+    print(i)
+    mask=np.ones(len(nums),dtype=bool)
+    mask[i]=False
+    print(mask)
+    masked=nums[mask]
+    print(masked)
+    answer[i]=np.product(masked)
 
-fig=px.line(x=distance, y=cumareas)
-fig = fig.update_layout({
-    "xaxis_title": "Path Length",
-    "yaxis_title": "Cumalitive Area",
-    "title":'S Motorneuron (M1) Cumalative Area vs Path Length'
-})
-fig.show()
+print(answer)

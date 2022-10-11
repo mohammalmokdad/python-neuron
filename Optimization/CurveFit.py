@@ -41,9 +41,7 @@ def cumarea(morph_file,resolution):
         area=0
         for sec in soma.subtree():
             halt=0
-            i=0
             for seg in sec.allseg():
-                i=i+1
                 if halt==0:
                     dist=h.distance(soma(0),seg)
                     if dist>=testdist:
