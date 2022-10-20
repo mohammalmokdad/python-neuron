@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 h.load_file("stdrun.hoc")
 
-h.load_file('cell.hoc')
+h.load_file('UsefulStuff/cell.hoc')
 
 soma=h.soma
 dend=h.dendrite
@@ -18,7 +18,7 @@ RC=h.RClamp(soma(0.5))
 RC.delay = 500*ms
 RC.dur = 2000*ms
 RC.pkamp = 60
-RC.bias=10
+RC.bias=0
 
 time=h.Vector().record(h._ref_t)
 voltage=h.Vector().record(soma(0.5)._ref_v)

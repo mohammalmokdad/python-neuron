@@ -1,6 +1,7 @@
 # M1 Motorneuron Type S, passive parameters generated from PassParams.py
 from neuron import h
 from neuron.units import um, mV, ms
+from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
@@ -46,6 +47,7 @@ soma.eca=60
 
 
 dend=h.Section(name="dend")
+dend.connect(soma,0)
 dend.diam=25
 dend.L=3636
 dend.Ra=11.3073
@@ -57,7 +59,7 @@ dend.g_pas=0.000105686
 dend.insert("gh")
 dend.half_gh=-77
 dend.ghbar_gh=3e-5
-dend.connect(soma,0)
+
 
 dend.insert('L_Ca')
 dend.gcabar_L_Ca = 0.00013
@@ -79,7 +81,37 @@ h.mVh_kdrRL = -21
 h.theta_m_L_Ca = -42
 h.tau_m_L_Ca = 40
 
+# # Current Clamp
+# stim_start=500
+# stim_dur=190
 
+# ic=h.IClamp(soma(0.5))
+# ic.delay = stim_start
+# ic.dur = stim_dur
+# ic.amp = 0
+
+# time=h.Vector().record(h._ref_t)
+# voltage=h.Vector().record(soma(0.5)._ref_v)
+# curr=h.Vector().record(ic._ref_i)
+
+# h.finitialize(-20*mV)
+# h.continuerun(stim_start+stim_dur+500)
+
+# fig=px.line(x=time, y=curr)
+# fig = fig.update_layout({
+#     "xaxis_title": "Time (ms)",
+#     "yaxis_title": "Current (nA)",
+#     "title":'Current-time plot'
+# })
+# fig.show()
+
+# fig1 =px.line(x=time, y=voltage)
+# fig1 = fig1.update_layout({
+#     "xaxis_title": "Time (ms)",
+#     "yaxis_title": "Voltage (V)",
+#     "title":'Voltage-time plot'
+# })
+# fig1.show()
 
 # Rn calc
 impcalc=h.Impedance()
@@ -88,57 +120,130 @@ impcalc.compute(0)
 imp=impcalc.input(soma(0.5))
 print('Input resistance is %f megahohms' % imp)
 
+# Ramp current clamp
 
-# Current Clamp
-stim_start=500
-stim_dur=1000
+stim_start=1000
+stim_dur=5000
+RC=h.RClamp(dend(0.5))
+RC.delay = stim_start
+RC.dur = stim_dur
+RC.pkamp = 30
+RC.bias=0
 
-ic=h.IClamp(soma(0.5))
-ic.delay = stim_start
-ic.dur = stim_dur
+time=h.Vector().record(h._ref_t)
+voltage=h.Vector().record(soma(0.5)._ref_v)
+curr=h.Vector().record(RC._ref_i)
 
-t=h.Vector().record(h._ref_t)
-v=h.Vector().record(soma(0.5)._ref_v)
+h.finitialize(-68.5)
+h.continuerun(2*stim_start+stim_dur)
 
 
-
-# Plotting FI curve
-
-trace = {"T": t, "V": v, "stim_start": [stim_start], "stim_end": [stim_start+stim_dur+500]}
+trace = {"T": time, "V": voltage, "stim_start": [stim_start], "stim_end": [stim_start+stim_dur]}
 traces = [trace]
+features = efel.getFeatureValues(traces, ["AP_amplitude", "ISIs", "spike_half_width", "AP_begin_time"])
+ISIs=features[0]['ISIs']
+AP_begin=features[0]['AP_begin_time']
+instfiringfreq=1/(1e-3*ISIs)
 
-testcurrs=np.arange(0,60,0.5)
-spike_counts=[]
-amplitudes=[]
+# Finding currents for each spike for FI curve
 
-ic.amp = testcurrs[0]
-h.finitialize(-70*mV)
-h.continuerun(stim_start+stim_dur+500)
-features = efel.getFeatureValues(traces, ["Spikecount"])
-spikecount=features[0]['Spikecount']
-n=spikecount[0]
-spike_counts.append(n)
-amplitudes.append(testcurrs[0])
+Half_times=[]
+for i in np.arange(0,len(AP_begin)-1):
+    Half_times.append((AP_begin[i]+AP_begin[i+1])/2)
 
-for curr in testcurrs:
-    print(curr)
-    ic.amp = curr
-    h.finitialize(-70*mV)
-    h.continuerun(stim_start+stim_dur+500)
-    features = efel.getFeatureValues(traces, ["Spikecount"])
-    spikecount=features[0]['Spikecount']
-    if spikecount[0]>n:
-        n=spikecount[0]
-        spike_counts.append(n)
-        amplitudes.append(curr)
+testcurrs=[]
+testtimes=[]
+for i in np.arange(0,len(Half_times)):
+    idx=(np.abs(time - Half_times[i])).argmin()
+    testtimes.append(time[idx])
+    testcurrs.append(curr[idx])
 
-fig=px.scatter(x=amplitudes, y=spike_counts)
-fig = fig.update_layout({
-    "xaxis_title": "Amplitude of Current (nA)",
-    "yaxis_title": "Spikes per sec (Hz)",
-    "title":'F-I curve for test cell'
-})
+fig=make_subplots(
+    rows=2, cols=2, subplot_titles=("Current-time Plot", "Voltage-time Plot", "Firing Rate-Current Plot", "Firing Rate-Time Plot")
+)
+fig.update_layout(showlegend=False)
+fig.add_trace(
+    go.Scatter(x=time, y=curr),
+    row=1,col=1
+)
+
+fig.add_trace(
+    go.Scatter(x=time, y=voltage),
+    row=1,col=2
+)
+
+fig.add_trace(
+    go.Scatter(x=testcurrs, y=instfiringfreq,mode='markers'),
+    row=2,col=1
+)
+
+fig.add_trace(
+    go.Scatter(x=testtimes, y=instfiringfreq,mode='markers'),
+    row=2,col=2
+)
+
+fig.update_xaxes(title_text="Time (ms)", row=1, col=1)
+fig.update_xaxes(title_text="Time (ms)", row=1, col=2)
+fig.update_xaxes(title_text="Current (nA)", row=2, col=1)
+fig.update_xaxes(title_text="Time (ms)", row=2, col=2)
+
+fig.update_yaxes(title_text="Current (nA)", row=1, col=1)
+fig.update_yaxes(title_text="Voltage (V)", row=1, col=2)
+fig.update_yaxes(title_text="Instantaneous Firing Frequency (imp/s)", row=2, col=1)
+fig.update_yaxes(title_text="Instantaneous Firing Frequency (imp/s)", row=2, col=2)
+
 fig.show()
+
+# # Current Clamp
+# stim_start=500
+# stim_dur=1000
+
+# ic=h.IClamp(soma(0.5))
+# ic.delay = stim_start
+# ic.dur = stim_dur
+
+# t=h.Vector().record(h._ref_t)
+# v=h.Vector().record(soma(0.5)._ref_v)
+
+
+
+# # Plotting FI curve
+
+# trace = {"T": t, "V": v, "stim_start": [stim_start], "stim_end": [stim_start+stim_dur+500]}
+# traces = [trace]
+
+# testcurrs=np.arange(0,60,0.5)
+# spike_counts=[]
+# amplitudes=[]
+
+# ic.amp = testcurrs[0]
+# h.finitialize(-70*mV)
+# h.continuerun(stim_start+stim_dur+500)
+# features = efel.getFeatureValues(traces, ["Spikecount"])
+# spikecount=features[0]['Spikecount']
+# n=spikecount[0]
+# spike_counts.append(n)
+# amplitudes.append(testcurrs[0])
+
+# for curr in testcurrs:
+#     print(curr)
+#     ic.amp = curr
+#     h.finitialize(-70*mV)
+#     h.continuerun(stim_start+stim_dur+500)
+#     features = efel.getFeatureValues(traces, ["Spikecount"])
+#     spikecount=features[0]['Spikecount']
+#     if spikecount[0]>n:
+#         n=spikecount[0]
+#         spike_counts.append(n)
+#         amplitudes.append(curr)
+
+# fig=px.scatter(x=amplitudes, y=spike_counts)
+# fig = fig.update_layout({
+#     "xaxis_title": "Amplitude of Current (nA)",
+#     "yaxis_title": "Spikes per sec (Hz)",
+#     "title":'F-I curve for test cell'
+# })
+# fig.show()
 
 
 

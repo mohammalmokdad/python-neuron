@@ -4,6 +4,7 @@
 IMPORT int nrnmpi_myid, nrn_nobanner_;
 
 extern void _L_Ca_reg();
+extern void _RCLAMP_reg();
 extern void _gh_reg();
 extern void _kca2_reg();
 extern void _kdrRL_reg();
@@ -17,6 +18,7 @@ void modl_reg(){
 	fprintf(stderr, "Additional mechanisms from files\n");
 
 fprintf(stderr," L_Ca.mod");
+fprintf(stderr," RCLAMP.mod");
 fprintf(stderr," gh.mod");
 fprintf(stderr," kca2.mod");
 fprintf(stderr," kdrRL.mod");
@@ -26,6 +28,7 @@ fprintf(stderr," naps.mod");
 fprintf(stderr, "\n");
     }
 _L_Ca_reg();
+_RCLAMP_reg();
 _gh_reg();
 _kca2_reg();
 _kdrRL_reg();

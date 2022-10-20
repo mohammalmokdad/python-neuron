@@ -1,17 +1,29 @@
-import numpy as np
+strs = ["a"]
 
-size=3
-rng = np.random.default_rng()
-nums=rng.integers(-30,31,size)
-print(nums)
-answer=np.empty(len(nums))
-for i in np.arange(0,len(nums),1):
-    print(i)
-    mask=np.ones(len(nums),dtype=bool)
-    mask[i]=False
-    print(mask)
-    masked=nums[mask]
-    print(masked)
-    answer[i]=np.product(masked)
+length=len(strs)
+if strs[0]=='':
+    b=''
+else:
+    cont = True
+    i=0
+    vec=range(0,length,1)
+    b=''
+    while cont == True:
+        if len(strs[0])>0:
+            if len(strs[0])>i:
+                a=strs[0][i]
+                for j in vec:
+                    if len(strs[j])>i:
+                        if a!=strs[j][i]:
 
-print(answer)
+                            cont=False
+                    else:
+                        cont=False
+                if cont==True:
+                    i=i+1
+                    b=b+a
+            else:
+                cont=False
+        else:
+            b=''
+print(b)
