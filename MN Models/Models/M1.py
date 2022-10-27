@@ -10,79 +10,79 @@ import efel
 h.load_file("stdrun.hoc")
 #h.celsius=37
 
-h.load_file('UsefulStuff/cell.hoc')
-soma=h.soma
-dend=h.dendrite
-for sec in h.allsec(): sec.nseg *= 3
+# h.load_file('UsefulStuff/cell.hoc')
+# soma=h.soma
+# dend=h.dendrite
+# for sec in h.allsec(): sec.nseg *= 3
 
-# soma=h.Section(name="soma")
-# soma.diam=25
-# soma.L=4264
-# soma.Ra=11.3073
-# soma.cm=0.89162
+soma=h.Section(name="soma")
+soma.diam=25
+soma.L=4264
+soma.Ra=11.3073
+soma.cm=0.89162
 
-# soma.insert('pas')
-# soma.e_pas=-70
-# soma.g_pas=0.000086456
+soma.insert('pas')
+soma.e_pas=-70
+soma.g_pas=0.000086456
 
-# soma.insert("gh")
-# soma.half_gh=-77
-# soma.ghbar_gh=3e-5
+soma.insert("gh")
+soma.half_gh=-77
+soma.ghbar_gh=3e-5
 
-# soma.insert('na3rp')
-# soma.gbar_na3rp = 0.05
-# soma.ar_na3rp = 0.4
-# soma.sh_na3rp = 12
+soma.insert('na3rp')
+soma.gbar_na3rp = 0.05
+soma.ar_na3rp = 0.4
+soma.sh_na3rp = 12
 
-# soma.insert('naps')
-# soma.gbar_naps = 0.0005
-# soma.ar_naps = 0.4
-# soma.sh_naps = 22
+soma.insert('naps')
+soma.gbar_naps = 0.0005
+soma.ar_naps = 0.4
+soma.sh_naps = 22
 
-# soma.insert('kdrRL')
-# soma.gMax_kdrRL = 0.03
-# soma.ek=-80
+soma.insert('kdrRL')
+soma.gMax_kdrRL = 0.03
+soma.ek=-80
 
-# soma.insert('mAHP')
-# soma.gcamax_mAHP = 8e-06
-# soma.gkcamax_mAHP = 0.0011
-# soma.taur_mAHP = 70
-# soma.eca=60
-
-
-
-# dend=h.Section(name="dend")
-# dend.connect(soma,0)
-# dend.diam=25
-# dend.L=3636
-# dend.Ra=11.3073
-# dend.cm=1.10794
-# dend.insert('pas')
-# dend.e_pas=-70
-# dend.g_pas=0.000105686
-
-# dend.insert("gh")
-# dend.half_gh=-77
-# dend.ghbar_gh=3e-5
+soma.insert('mAHP')
+soma.gcamax_mAHP = 8e-06
+soma.gkcamax_mAHP = 0.0011
+soma.taur_mAHP = 70
+soma.eca=60
 
 
-# dend.insert('L_Ca')
-# dend.gcabar_L_Ca = 0.00013
-# dend.ecaL=60
 
-# dend.insert('kca2')
-# dend.g_kca2 = 1.8e-05
-# dend.depth2_kca2 = 100
-# dend.taur2_kca2 = 200
-# dend.ek=-80
+dend=h.Section(name="dend")
+dend.connect(soma,0)
+dend.diam=25
+dend.L=3636
+dend.Ra=11.3073
+dend.cm=1.10794
+dend.insert('pas')
+dend.e_pas=-70
+dend.g_pas=0.000105686
 
-# h.qinf_na3rp = 8
-# h.thinf_na3rp = -50
-# h.vslope_naps = 6
-# h.mvhalfca_mAHP = -20
-# h.tmin_kdrRL = 0.8
-# h.taumax_kdrRL = 20
-# h.mVh_kdrRL = -21
+dend.insert("gh")
+dend.half_gh=-77
+dend.ghbar_gh=3e-5
+
+
+dend.insert('L_Ca')
+dend.gcabar_L_Ca = 0.00013
+dend.ecaL=60
+
+dend.insert('kca2')
+dend.g_kca2 = 1.8e-05
+dend.depth2_kca2 = 100
+dend.taur2_kca2 = 200
+dend.ek=-80
+
+h.qinf_na3rp = 8
+h.thinf_na3rp = -50
+h.vslope_naps = 6
+h.mvhalfca_mAHP = -20
+h.tmin_kdrRL = 0.8
+h.taumax_kdrRL = 20
+h.mVh_kdrRL = -21
 # h.theta_m_L_Ca = -42
 # h.tau_m_L_Ca = 40
 
@@ -94,6 +94,13 @@ for sec in h.allsec(): sec.nseg *= 3
 # ic.delay = stim_start
 # ic.dur = stim_dur
 # ic.amp = 0
+
+# ## Randy's suggestions for getting more sag in firing rate
+# dend.g_kca2 = 4e-05 # default 1.8e-05, 4e-05
+# dend.depth2_kca2 = 500 # default 100
+# dend.taur2_kca2 = 2000 # default 200
+# # h.dendrite.caix_kca2 = 4     # default 2
+
 
 # time=h.Vector().record(h._ref_t)
 # voltage=h.Vector().record(soma(0.5)._ref_v)
@@ -127,13 +134,13 @@ print('Input resistance is %f megahohms' % imp)
 
 # Ramp current clamp
 
-stim_start=0
-stim_dur=10000
+stim_start=1000
+stim_dur=6000
 RC=h.RClamp(soma(0.5))
 RC.delay = stim_start
 RC.dur = stim_dur
-RC.pkamp = 35
-RC.bias=-8
+RC.pkamp = 30
+RC.bias=-0
 
 time=h.Vector().record(h._ref_t)
 voltage=h.Vector().record(soma(0.5)._ref_v)
